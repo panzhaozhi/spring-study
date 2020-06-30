@@ -17,7 +17,7 @@ public class EarnMoney {
     static String listPattern = "http://sjcx.fldj.moa.gov.cn/moazzys/feiliao.aspx?page=%d&e=&t=&p=&z=&h=&x=&y=&fd=&yd=";
     Pattern listNoPattern = Pattern.compile("<span id=\"Gvfl_Label1.*?\">([0-9]+).*?<a href='(feiliao_search\\.aspx\\?id=[0-9]+)'",Pattern.DOTALL|Pattern.MULTILINE);
 //    Pattern detailPattern = Pattern.compile("feiliao_search\\.aspx\\?id=[0-9]+");
-    Pattern contentPattern = Pattern.compile("<table width=\"985\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#FFFFFF\">.*?<span id=\"lblqyname\">(.*?)</span>.*?<span id=\"lblpnme\">(.*?)</span>.*?<span id=\"lblsname\">(.*?)</span>.*?<span id=\"lblsyzw\">(.*?)</span>.*?<span id=\"lbldjzh\">(.*?)</span>.*?<span id=\"lbljszb\">(.*?)</span>.*?<span id=\"lblyxjzname\">(.*?)</span>.*?<span id=\"lblxt\">(.*?)</span>.*?<span id=\"lblyxdate\">(.*?)</span>.*?<span id=\"yxdate\">(.*?)</span>");
+    Pattern contentPattern = Pattern.compile("<table width=\"985\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#FFFFFF\">.*?<span id=\"lblqyname\">(.*?)</span>.*?<span id=\"lblpnme\">(.*?)</span>.*?<span id=\"lblsname\">(.*?)</span>.*?<span id=\"lblsyzw\">(.*?)</span>.*?<span id=\"lbldjzh\">(.*?)</span>.*?<span id=\"lbljszb\">(.*?)</span>.*?<span id=\"lblyxjzname\">(.*?)</span>.*?<span id=\"lblxt\">(.*?)</span>.*?<span id=\"lblyxdate\">(.*?)</span>.*?<span id=\"yxdate\">(.*?)</span>",Pattern.DOTALL|Pattern.MULTILINE);
     Set<String> totalUrl = new HashSet<>();
 
     public void collectPages(){
@@ -40,12 +40,12 @@ public class EarnMoney {
     public Set<FormatBean> getDetails(String id,String url){
         url = "http://sjcx.fldj.moa.gov.cn/moazzys/" + url;
         String res = restTemplate.getForObject(url,String.class);
-        System.out.println(res);
+//        System.out.println(res);
         Set<FormatBean> formatBeanSet = new HashSet<>();
         Matcher matcher = contentPattern.matcher(res);
-        System.out.println(matcher.groupCount());
-        if(matcher.groupCount() == 10){
+        if(matcher.find()){
             FormatBean formatBean = new FormatBean();
+            System.out.println(matcher.group(0));
             formatBean.setNo(id);
             formatBean.setCompanyName(matcher.group(1));
             formatBean.setProductName(matcher.group(2));

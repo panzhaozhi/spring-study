@@ -23,7 +23,7 @@ public class EarnTest {
     @Test
     public void testDetail(){
         String url = "feiliao_search.aspx?id=1829082";
-        earnMoney.getDetails(url);
+        earnMoney.getDetails("1",url);
     }
 
 }
