@@ -8,10 +8,10 @@ public class Test5 {
     @Test
     @DisplayName("exception test")
     public void exceptionTest(){
-        int sum = 1000;
-        if(sum%1000 == 0){
-            System.out.println(sum);
-        }
+int sum = 1000;
+if(sum%1000 == 0){
+    System.out.println(sum);
+}
     }
 
 }
