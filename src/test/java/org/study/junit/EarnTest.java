@@ -18,18 +18,18 @@ public class EarnTest {
     EarnMoney earnMoney;
 
     @Test
-    public void test(){
+    public void test() throws InterruptedException {
         earnMoney.getDetails(1);
     }
 
     @Test
-    public void testDetail(){
+    public void testDetail() throws InterruptedException {
         String url = "feiliao_search.aspx?id=1829082";
         earnMoney.getDetails("1",url);
     }
 
     @Test
-    public void testCollect() throws IOException {
+    public void testCollect() throws IOException, InterruptedException {
         earnMoney.collectPages();
     }
 

@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,8 +32,9 @@ public class EarnMoney {
     Pattern contentPattern = Pattern.compile("<table width=\"985\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#FFFFFF\">.*?<span id=\"lblqyname\">(.*?)</span>.*?<span id=\"lblpnme\">(.*?)</span>.*?<span id=\"lblsname\">(.*?)</span>.*?<span id=\"lblsyzw\">(.*?)</span>.*?<span id=\"lbldjzh\">(.*?)</span>.*?<span id=\"lbljszb\">(.*?)</span>.*?<span id=\"lblyxjzname\">(.*?)</span>.*?<span id=\"lblxt\">(.*?)</span>.*?<span id=\"lblyxdate\">(.*?)</span>.*?<span id=\"yxdate\">(.*?)</span>",Pattern.DOTALL|Pattern.MULTILINE);
     Set<String> totalUrl = new HashSet<>();
     Set<FormatBean> formatBeanSet = new HashSet<>();
+    int num = 0;
 
-    public void collectPages() throws IOException {
+    public void collectPages() throws IOException, InterruptedException {
 
         String fileName = "/data/earni.xlsx";
         SXSSFWorkbook workbook = new SXSSFWorkbook(200);
@@ -45,15 +48,15 @@ public class EarnMoney {
             RichTextString text = new XSSFRichTextString(entry.getValue());
             cell.setCellValue(text);
         }
-        for(int i=1;i<2;i++){
+        for(int i=1;i<=1;i++){
             System.out.println("process page "+i);
             getDetails(i);
         }
         Iterator iterator = idUrl.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<String,String> entry = (Map.Entry<String,String>)iterator.next();
-            formatBeanSet.addAll(getDetails(entry.getKey(),entry.getValue()));
-        }
+//        while (iterator.hasNext()){
+//            Map.Entry<String,String> entry = (Map.Entry<String,String>)iterator.next();
+//            formatBeanSet.addAll(getDetails(entry.getKey(),entry.getValue()));
+//        }
         int rowNum = 1;
         List<FormatBean> formatBeanList = formatBeanSet.stream().sorted(Comparator.comparing(FormatBean::getNo)).collect(Collectors.toList());
         for(FormatBean formatBean : formatBeanList){
@@ -69,36 +72,37 @@ public class EarnMoney {
             row.createCell(8).setCellValue(formatBean.getPubDate());
             row.createCell(9).setCellValue(formatBean.getValidDate());
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        out.close();
+        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+        workbook.write(fileOutputStream);
+        fileOutputStream.close();
         // 释放掉workbook 创建sheet时的临时文件。
         workbook.dispose();
     }
 
-    public Map<String,String> getDetails(int page){
+    public Map<String,String> getDetails(int page) throws InterruptedException {
+
         String url = String.format(listPattern,page);
         String res = restTemplate.getForObject(url,String.class);
-        System.out.println(res);
+//        System.out.println(res);
         Matcher matcher = listNoPattern.matcher(res);
         while (matcher.find()){
             if(matcher.groupCount() == 2){
                 idUrl.put(matcher.group(1),matcher.group(2));
                 formatBeanSet.addAll(getDetails(matcher.group(1),matcher.group(2)));
             }
+            System.out.println("formatBeanSet " + formatBeanSet.size());
         }
         return idUrl;
     }
 
-    public Set<FormatBean> getDetails(String id,String url){
+    public Set<FormatBean> getDetails(String id,String url) throws InterruptedException {
         url = "http://sjcx.fldj.moa.gov.cn/moazzys/" + url;
         String res = restTemplate.getForObject(url,String.class);
-//        System.out.println(res);
+        System.out.println(num++ + " " + url);
         Set<FormatBean> formatBeanSet = new HashSet<>();
         Matcher matcher = contentPattern.matcher(res);
         if(matcher.find()){
             FormatBean formatBean = new FormatBean();
-            System.out.println(matcher.group(0));
             formatBean.setNo(Integer.parseInt(id.trim()));
             formatBean.setCompanyName(matcher.group(1));
             formatBean.setProductName(matcher.group(2));
