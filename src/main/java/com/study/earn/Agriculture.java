@@ -1,10 +1,18 @@
 package com.study.earn;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +27,20 @@ public class Agriculture {
 
     public void process(){
 
-        for(int i=1;i<=1494;i++){
-            getList(i);
+        String fileName = "/data/earni.xlsx";
+        SXSSFWorkbook workbook = new SXSSFWorkbook(200);
+        Sheet sheet = workbook.createSheet();
+        //设置标题
+        Row rowTitle = sheet.createRow(0);
+        HashMap<Integer, String> checklogOrderNameMap = new HashMap<>();
+        tableName(checklogOrderNameMap);
+        for (Map.Entry<Integer, String> entry : checklogOrderNameMap.entrySet()) {
+            Cell cell = rowTitle.createCell(entry.getKey());
+            RichTextString text = new XSSFRichTextString(entry.getValue());
+            cell.setCellValue(text);
+        }
+        for(int i=1;i<=1;i++){
+            Set<String> urlSet = getList(i);
         }
 
     }
@@ -55,5 +75,18 @@ public class Agriculture {
 
     }
 
+    private void tableName(HashMap<Integer, String> checklogOrderNameMap) {
+        checklogOrderNameMap.put(0, "序号");
+        checklogOrderNameMap.put(1, "企业名称");
+        checklogOrderNameMap.put(2, "产品通用名");
+        checklogOrderNameMap.put(3, "产品商品名");
+        checklogOrderNameMap.put(4, "产品形态");
+        checklogOrderNameMap.put(5, "登记技术指标");
+        checklogOrderNameMap.put(6, "适宜作物");
+        checklogOrderNameMap.put(7, "登记证号");
+        checklogOrderNameMap.put(8, "发证日期");
+        checklogOrderNameMap.put(9, "有效日期");
+
+    }
 
 }

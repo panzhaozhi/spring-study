@@ -16,7 +16,7 @@ public class AgricultrueTest {
 
     @Test
     public void test(){
-        agriculture.getContent(1);
+//        agriculture.getContent(1);
     }
 
 }

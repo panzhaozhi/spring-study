@@ -1,9 +1,17 @@
 package com.study;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,14 +31,49 @@ public class EarnMoney {
     Set<String> totalUrl = new HashSet<>();
     Set<FormatBean> formatBeanSet = new HashSet<>();
 
-    public void collectPages(){
+    public void collectPages() throws IOException {
+
+        String fileName = "/data/earni.xlsx";
+        SXSSFWorkbook workbook = new SXSSFWorkbook(200);
+        Sheet sheet = workbook.createSheet();
+        //设置标题
+        Row rowTitle = sheet.createRow(0);
+        HashMap<Integer, String> checklogOrderNameMap = new HashMap<>();
+        tableName(checklogOrderNameMap);
+        for (Map.Entry<Integer, String> entry : checklogOrderNameMap.entrySet()) {
+            Cell cell = rowTitle.createCell(entry.getKey());
+            RichTextString text = new XSSFRichTextString(entry.getValue());
+            cell.setCellValue(text);
+        }
         for(int i=1;i<2;i++){
+            System.out.println("process page "+i);
             getDetails(i);
         }
+        Iterator iterator = idUrl.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String,String> entry = (Map.Entry<String,String>)iterator.next();
+            formatBeanSet.addAll(getDetails(entry.getKey(),entry.getValue()));
+        }
+        int rowNum = 1;
         List<FormatBean> formatBeanList = formatBeanSet.stream().sorted(Comparator.comparing(FormatBean::getNo)).collect(Collectors.toList());
         for(FormatBean formatBean : formatBeanList){
-
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(formatBean.getNo());
+            row.createCell(1).setCellValue(formatBean.getCompanyName());
+            row.createCell(2).setCellValue(formatBean.getProductName());
+            row.createCell(3).setCellValue(formatBean.getProductBusi());
+            row.createCell(4).setCellValue(formatBean.getProductState());
+            row.createCell(5).setCellValue(formatBean.getTech());
+            row.createCell(6).setCellValue(formatBean.getPlant());
+            row.createCell(7).setCellValue(formatBean.getRecord());
+            row.createCell(8).setCellValue(formatBean.getPubDate());
+            row.createCell(9).setCellValue(formatBean.getValidDate());
         }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        out.close();
+        // 释放掉workbook 创建sheet时的临时文件。
+        workbook.dispose();
     }
 
     public Map<String,String> getDetails(int page){
@@ -69,6 +112,20 @@ public class EarnMoney {
             formatBeanSet.add(formatBean);
         }
         return formatBeanSet;
+    }
+
+    private void tableName(HashMap<Integer, String> checklogOrderNameMap) {
+        checklogOrderNameMap.put(0, "序号");
+        checklogOrderNameMap.put(1, "企业名称");
+        checklogOrderNameMap.put(2, "产品通用名");
+        checklogOrderNameMap.put(3, "产品商品名");
+        checklogOrderNameMap.put(4, "产品形态");
+        checklogOrderNameMap.put(5, "登记技术指标");
+        checklogOrderNameMap.put(6, "适宜作物");
+        checklogOrderNameMap.put(7, "登记证号");
+        checklogOrderNameMap.put(8, "发证日期");
+        checklogOrderNameMap.put(9, "有效日期");
+
     }
 
 }
