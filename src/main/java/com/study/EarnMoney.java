@@ -7,6 +7,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 @Service
 public class EarnMoney {
 
@@ -19,9 +21,16 @@ public class EarnMoney {
 //    Pattern detailPattern = Pattern.compile("feiliao_search\\.aspx\\?id=[0-9]+");
     Pattern contentPattern = Pattern.compile("<table width=\"985\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" bgcolor=\"#FFFFFF\">.*?<span id=\"lblqyname\">(.*?)</span>.*?<span id=\"lblpnme\">(.*?)</span>.*?<span id=\"lblsname\">(.*?)</span>.*?<span id=\"lblsyzw\">(.*?)</span>.*?<span id=\"lbldjzh\">(.*?)</span>.*?<span id=\"lbljszb\">(.*?)</span>.*?<span id=\"lblyxjzname\">(.*?)</span>.*?<span id=\"lblxt\">(.*?)</span>.*?<span id=\"lblyxdate\">(.*?)</span>.*?<span id=\"yxdate\">(.*?)</span>",Pattern.DOTALL|Pattern.MULTILINE);
     Set<String> totalUrl = new HashSet<>();
+    Set<FormatBean> formatBeanSet = new HashSet<>();
 
     public void collectPages(){
+        for(int i=1;i<2;i++){
+            getDetails(i);
+        }
+        List<FormatBean> formatBeanList = formatBeanSet.stream().sorted(Comparator.comparing(FormatBean::getNo)).collect(Collectors.toList());
+        for(FormatBean formatBean : formatBeanList){
 
+        }
     }
 
     public Map<String,String> getDetails(int page){
@@ -32,6 +41,7 @@ public class EarnMoney {
         while (matcher.find()){
             if(matcher.groupCount() == 2){
                 idUrl.put(matcher.group(1),matcher.group(2));
+                formatBeanSet.addAll(getDetails(matcher.group(1),matcher.group(2)));
             }
         }
         return idUrl;
@@ -46,7 +56,7 @@ public class EarnMoney {
         if(matcher.find()){
             FormatBean formatBean = new FormatBean();
             System.out.println(matcher.group(0));
-            formatBean.setNo(id);
+            formatBean.setNo(Integer.parseInt(id.trim()));
             formatBean.setCompanyName(matcher.group(1));
             formatBean.setProductName(matcher.group(2));
             formatBean.setProductBusi(matcher.group(3));

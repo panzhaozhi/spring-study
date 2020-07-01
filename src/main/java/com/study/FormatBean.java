@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class FormatBean {
-    String no;
+    Integer no;
     String companyName;
     String productName;
     String productBusi;
