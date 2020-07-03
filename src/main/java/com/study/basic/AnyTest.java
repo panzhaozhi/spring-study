@@ -1,6 +1,6 @@
 package com.study.basic;
 
-import com.carrotsearch.sizeof.RamUsageEstimator;
+//import com.carrotsearch.sizeof.RamUsageEstimator;
 import org.junit.Test;
 
 public class AnyTest {
@@ -19,6 +19,6 @@ System.out.println("Char: "+" byte_number: "+Character.SIZE);
     public void test02() {
 byte[] a = {1};
 String b = "abcveq";
-System.out.println(RamUsageEstimator.sizeOf(b));
+//System.out.println(RamUsageEstimator.sizeOf(b));
     }
 }

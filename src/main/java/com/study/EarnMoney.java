@@ -36,7 +36,7 @@ public class EarnMoney {
 
     public void collectPages() throws IOException, InterruptedException {
 
-        String fileName = "/data/earni.xlsx";
+        String fileName = "D://earni.xlsx";
         SXSSFWorkbook workbook = new SXSSFWorkbook(200);
         Sheet sheet = workbook.createSheet();
         //设置标题
@@ -48,7 +48,7 @@ public class EarnMoney {
             RichTextString text = new XSSFRichTextString(entry.getValue());
             cell.setCellValue(text);
         }
-        for(int i=1;i<=1;i++){
+        for(int i=1;i<=1494;i++){
             System.out.println("process page "+i);
             getDetails(i);
         }
