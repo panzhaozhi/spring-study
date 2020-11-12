@@ -105,11 +105,11 @@ public class Download{
 
     public static void main(String[] args) throws YoutubeDLException, InterruptedException {
 
-        YoutubeDLRequest request  = new YoutubeDLRequest("");
+        YoutubeDLRequest request  = new YoutubeDLRequest("https://www.youtube.com/watch?v=pvsO9KX6JX4");
         DownloadProgressCallback callback = new DownloadProgressCallback() {
             @Override
             public void onProgressUpdate(float progress, long etaInSeconds) {
-
+                System.out.println(progress+"\t"+etaInSeconds);
             }
         };
         Download download = new Download();

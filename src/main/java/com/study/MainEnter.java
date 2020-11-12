@@ -1,4 +1,4 @@
-package com.study.earn;
+package com.study;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.study.earn;
+package com.study.run;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.study.aop.AopRun;
 import com.study.MainEnter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MainEnter.class)
-public class AgricultrueTest {
-
+public class AopRunTest {
     @Autowired
-    Agriculture agriculture;
+    AopRun aopRun;
 
     @Test
     public void test(){
-//        agriculture.getContent(1);
+        aopRun.run(1,"2");
     }
 
 }

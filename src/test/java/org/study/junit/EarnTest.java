@@ -1,7 +1,7 @@
 package org.study.junit;
 
 import com.study.earn.EarnMoney;
-import com.study.earn.MainEnter;
+import com.study.MainEnter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
